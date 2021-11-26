@@ -1,40 +1,22 @@
+//每个文件都是一个模块
 const Koa = require('koa')
+const koaBody = require('koa-body')
+const {connect} = require('./db/')
+const registerRouters = require('./routers/index')//注册模块
+const cors = require('@koa/cors')
 
-const app = new Koa()
+const app = new Koa();
 
-//通过app.use注册中间件
-//中间件本质上 他就是一个函数
-//context上下文，当前请求的相关信息都在里面
-app.use(async(context,next) => {
-    // console.log(context);
-    const { require:req } = context;
-    // const url = req.url;
-    const{ url } = req;
+connect().then(() => {//用promise保证时序不出问题
+    app.use(cors())
+    app.use(koaBody())
+    registerRouters(app);
 
-    if(url === '/') {
-        // context.body = 'abcde'
-        context.response.body = '<h1>主页</h1>'
-        return;
-    }
-
-    if(url === '/user/list') {
-        // context.body = 'abcde'
-        context.response.body = '<h1>用户列表<h1>'
-        return;
-    }
-    context.body = '404'  
-    console.log(1);
-    await next()
-    console.log(3);
+    //开启一个http服务
+    //接受http请求，并做处理，处理完后响应
+    app.listen(3000,() => {
+        console.log('启动成功');
+    })
 })
 
-app.use(async(context) => {
-    console.log(2);
-    context.body = '找不到资源'
-})
 
-app.listen(3000,() => {
-    console.log('启动成功');
-})
-
-console.log('1122333'); 
