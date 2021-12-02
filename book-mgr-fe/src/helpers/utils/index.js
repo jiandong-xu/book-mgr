@@ -26,3 +26,11 @@ export const result = (response,authShowErrorMsg = true) => {
         }       
     }
 }
+
+export const clone = (obj) => {
+    return JSON.parse(JSON.stringify(obj));
+}
+
+export const formatTimestamp =(obj) = {
+    return JSON.parse(JSON)
+}

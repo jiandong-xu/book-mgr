@@ -3,7 +3,7 @@ const Koa = require('koa')
 const koaBody = require('koa-body')
 const {connect} = require('./db/')
 const registerRouters = require('./routers/index')//注册模块
-const cors = require('@koa/cors')
+const cors = require('@koa/cors') 
 
 const app = new Koa();
 
