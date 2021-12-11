@@ -8,7 +8,8 @@ const defaultFormData = {
     price:0,
     author:'',
     publishDate:0,
-    classify:'' 
+    classify:'',
+    count:0
 }
 
 export default defineComponent({
@@ -23,7 +24,7 @@ export default defineComponent({
             const form = clone(addForm);//深拷贝
             // console.log(form);
             form.publishDate = addForm.publishDate.valueOf();//转化时间戳
-            const res = await book.add(form.name,form.price,form.author,form.publishDate,form.classify)
+            const res = await book.add(form.name,form.price,form.author,form.publishDate,form.classify,form.count)
             console.log(form.name,form.price,form.author,form.publishDate,form.classify);
             result(res).success((d,{data}) => {
                 // console.log('111');

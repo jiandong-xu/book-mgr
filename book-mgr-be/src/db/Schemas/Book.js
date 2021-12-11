@@ -9,9 +9,11 @@ const BookSchema = new mongoose.Schema({
     //作者
     author:String,
     //出版日期
-    publishDate:Number,
+    publishDate:String,
     //分类 
     classify:String,
+    //库存
+    count:Number,
     meta: getMate(),//元信息，创建的事件和修改的事件
 });
 
