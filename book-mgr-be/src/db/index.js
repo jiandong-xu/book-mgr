@@ -1,6 +1,8 @@
 require('./Schemas/User');//为了让这个文件执行，执行后就会被注册，注册后就可以在routers中使用
 require('./Schemas/InviteCode');
 require('./Schemas/Book');
+require('./Schemas/InventoryLog')
+
 const mongoose = require('mongoose');
 
 const connect = () => { 

@@ -34,6 +34,13 @@ export const update = (data={}) => {
         data
     )
 }
+
+export const detail = (id) => {
+    return axios.get(
+        `http://localhost:3000/book/detail/${id}`,
+    );
+}
+
 // export const login = (account,password) => {
 //     return axios.post('http://localhost:3000/auth/login',{
 //         account,

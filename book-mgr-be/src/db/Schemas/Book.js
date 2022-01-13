@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const {getMate} = require('./helpers')
+const {getMeta,preSave} = require('./helpers')
 
 const BookSchema = new mongoose.Schema({
     //书名
@@ -14,7 +14,9 @@ const BookSchema = new mongoose.Schema({
     classify:String,
     //库存
     count:Number,
-    meta: getMate(),//元信息，创建的事件和修改的事件
+    meta: getMeta(),//元信息，创建的事件和修改的事件
 });
+
+BookSchema.pre('save',preSave);
 
 mongoose.model('Book',BookSchema)//第一个参数为名字，第二个参数传递给它的参数 
