@@ -1,8 +1,12 @@
 import {defineComponent,reactive} from 'vue';
 import {UserOutlined,LockOutlined,MailOutlined} from '@ant-design/icons-vue';
-import {auth} from '../../service/index.js';
-import {message} from 'ant-design-vue';//提示框
-import {result} from '../../helpers/utils'
+import {auth,resetPassword} from '../../service/index.js';
+import {message,Modal,Input} from 'ant-design-vue';//提示框
+import {result} from '../../helpers/utils';
+import {getCharacterInfoById} from '../../helpers/character/index'
+import store from '../../store/index';
+import {useRouter} from 'vue-router';
+import { setToken } from '../../helpers/token/index';
 
 export default defineComponent({
     components: {
@@ -11,6 +15,8 @@ export default defineComponent({
         MailOutlined
     },
     setup() {
+        const router = useRouter();
+
         //注册用的表单数据
         const regForm = reactive({
             account:'',
@@ -60,6 +66,30 @@ export default defineComponent({
             password:'',
         });
 
+        const forgetPassword = () => {
+            Modal.confirm({
+                title:'输入账号发起申请，管理员会审核',
+                content: (
+                    <div>
+                        <Input class="__forget_password_account"></Input>
+                    </div>
+                ),
+                onOk: async() => {
+                    const el = document.querySelector('.__forget_password_account');
+                    let account = el.value;
+
+                    const res = await resetPassword.add(
+                        account
+                    );
+
+                    result(res) 
+                        .success(({msg}) => {
+                            message.success(msg);
+                        });
+                }
+            });
+        }
+
         //登录逻辑
         const login = async () => {
             if(loginForm.account === '') {
@@ -74,19 +104,27 @@ export default defineComponent({
 
             const res = await auth.login(loginForm.account,loginForm.password)
 
+
             result(res) 
-            .success((data) => {
-                message.success(data.msg)
-            })
+            .success(async({msg,data:{user,token}}) => {
+                message.success(msg);
+                setToken(token);
+                await store.dispatch('getCharacterInfo');
+
+                store.commit('setUserInfo',user);
+                store.commit('setUserCharacter',getCharacterInfoById(user.character));
+
+                
+
+                router.replace('/books');
+            });
 
             // if(data.code) {
             //     message.success(data.msg)
             //     return;
             // }
-
-            // message.error(data.msg)
-            
-        }
+            // message.error(data.msg)  
+        };
 
 
         return {
@@ -96,7 +134,9 @@ export default defineComponent({
 
             //登录相关数据
             loginForm,
-            login
+            login,
+
+            forgetPassword
         }
     } 
 })

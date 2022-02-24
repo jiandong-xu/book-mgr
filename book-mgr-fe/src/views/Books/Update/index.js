@@ -3,6 +3,7 @@ import {book} from '../../../service'
 import {message} from 'ant-design-vue'
 import {result,clone} from '../../../helpers/utils/index'
 import moment from 'moment'
+import store from '../../../store'
 
 
 export default defineComponent({
@@ -49,7 +50,8 @@ export default defineComponent({
             editForm,
             submit,
             props,
-            close
+            close,
+            store:store.state
         }
     }
 })

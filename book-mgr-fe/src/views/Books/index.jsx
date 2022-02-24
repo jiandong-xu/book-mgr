@@ -1,10 +1,12 @@
 import { defineComponent,ref,onMounted} from "vue";
-import {book} from '../../service'
-import {useRouter} from 'vue-router'
-import {message,Modal,Input} from 'ant-design-vue'
-import {result,formatTimestamp} from '../../helpers/utils'
-import AddOne from "./AddOne/index.vue"; 
-import Update from './Update/index.vue'
+import {book,bookClassify} from '../../service';
+import {useRouter} from 'vue-router';
+import {message,Modal,Input} from 'ant-design-vue';
+import {result,formatTimestamp} from '../../helpers/utils';
+import { getHeaders } from "../../helpers/request";
+import {getClassifyTitleById} from '../../helpers/book-classify';
+import AddOne from "./AddOne/index.vue";
+import Update from './Update/index.vue';
 
 import { Item } from "ant-design-vue/lib/menu";
 
@@ -13,7 +15,10 @@ export default defineComponent ({
         AddOne,
         Update
     },
-    setup() {
+    props:{
+        simple:Boolean
+    },
+    setup(props) {
         const router = useRouter();
 
 
@@ -45,16 +50,22 @@ export default defineComponent ({
             },
             {
                 title:'分类',
-                dataIndex:'classify'
-            },
-            {
-                title:'操作',
-                slots:{
-                    customRender:'actions'
+                slots: {
+                    customRender:'classify'
                 }
             },
-        ]//代表每一个列的配置项
+            
+        ];//代表每一个列的配置项
         //代表表格的一行
+
+        if(!props.simple) {
+            columns.push({
+                title:'操作',
+                slots: {
+                    customRender:'actions'
+                }
+            })
+        }
 
         const show = ref(false);
         const showUpdateModal = ref(false);
@@ -64,6 +75,9 @@ export default defineComponent ({
         const keyword = ref('');//搜索框关键字
         const isSearch = ref(false)//标记当前是否在搜索状态，控制返回按钮显示
         const curEditBook = ref({});
+        const classifyLoading = ref(true);
+
+     
 
         //获取书记列表
         const getList = async () => {
@@ -88,8 +102,8 @@ export default defineComponent ({
         //切换页码
         const setPage = (page) => {
             curPage.value = page;
-           
-            getList(); 
+            getBookClassify();
+            getList();
         }
 
         // const setShow = (bool) => {
@@ -196,6 +210,22 @@ export default defineComponent ({
             router.push(`/books/${record._id}`);
         }
 
+        const onUploadChange = ({file}) => {
+            if(file.response) {
+                result(file.response)
+                    .success(async(key) => {
+                        const res = await book.addMany(key);
+
+                        result(res)
+                            .success(({data:{addCount}}) => {
+                                message.success(`成功添加${addCount}本书`);
+
+                                getList();
+                            })
+                    });
+            }
+        };
+
         return {
             columns,
             show,
@@ -215,8 +245,12 @@ export default defineComponent ({
             update,
             curEditBook,
             updateCurBook,
-            toDetail
+            toDetail,
+            getClassifyTitleById,
             // setShow
+            simple:props.simple,
+            onUploadChange,
+            headers:getHeaders()
         }
     }
 })

@@ -3,7 +3,9 @@ const mongoose = require('mongoose');
 const User = mongoose.model('User')
 const { getBody } = require('../../helpers/utils/index.js')
 const jwt = require('jsonwebtoken')
+const config = require('../../project.config.js');
 const InviteCode = mongoose.model('InviteCode')
+
 
 const router = new Router({
     prefix: '/auth'
@@ -75,8 +77,6 @@ router.post('/register', async (ctx) => {
     }
 });
 
-
-
     router.post('/login', async (ctx) => {
     const { account, password } = getBody(ctx);
 
@@ -104,8 +104,9 @@ router.post('/register', async (ctx) => {
 
     const user = {
         account:findUser.account,
+        character:findUser.character,
         _id:findUser._id    
-    }
+    };
 
     if(findUser.password === password) {
         ctx.body = {
@@ -113,7 +114,7 @@ router.post('/register', async (ctx) => {
             msg:"登入成功",
             data: {
                 user,
-                token:jwt.sign(user,'book-mgr')
+                token:jwt.sign(user,config.JWT_SECRET),
             }
         }
         return;

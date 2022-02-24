@@ -11,7 +11,22 @@
               <a-input v-model:value="addForm.account"></a-input>
           </a-form-item>
            <a-form-item label="密码">
-              <a-input v-model:value="addForm.password"  :min='0' :max="99999"></a-input>
+              <a-input v-model:value="addForm.password"></a-input>
+          </a-form-item>
+          <a-form-item label='角色'>
+            <a-select
+            v-model:value="addForm.character"
+            style="width:220px;"
+            >
+            <a-select-option
+             v-for="item in characterInfo"
+             :key="item._id"
+             :value="item._id"
+             >
+              {{item.title}}
+            </a-select-option>
+
+            </a-select>
           </a-form-item>
       </a-form>
 

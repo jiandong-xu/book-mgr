@@ -1,8 +1,12 @@
-import {defineComponent,ref,onMounted} from 'vue';
+import {defineComponent,ref,onMounted,reactive} from 'vue';
 import { user } from '@/service';
-import {message} from 'ant-design-vue'
-import {result,formatTimestamp} from '../../helpers/utils/index'
+import {message} from 'ant-design-vue';
+import {EditOutlined} from '@ant-design/icons-vue'//引入画笔
+import {result,formatTimestamp} from '../../helpers/utils/index';
 import AddOne from './AddOne/index.vue';
+import { getHeaders } from '../../helpers/request';
+import store from '../../store/index';
+import {getCharacterInfoById} from '../../helpers/character/index';
 
 const columns = [{
     title:'账户',
@@ -12,6 +16,12 @@ const columns = [{
     title:'创建日期',
     slots: {
         customRender:'createdAt',
+    }
+},
+{
+    title:'角色',
+    slots: {
+        customRender:'character',
     }
 },
 {
@@ -25,7 +35,8 @@ const columns = [{
 
 export default defineComponent({
     components:{
-        AddOne
+        AddOne,
+        EditOutlined
     },
     setup() {
         const list = ref([]);
@@ -34,6 +45,12 @@ export default defineComponent({
         const showAddModal = ref(false);
         const keyword = ref('');
         const isSearch = ref(false);
+        const showEditCharacterModal = ref(false);
+
+        const editForm = reactive({
+            character:'',
+            current: {},
+        });
 
         const getUser = async () => {
             const res = await user.list(curPage.value,10,keyword.value)
@@ -78,10 +95,45 @@ export default defineComponent({
             getUser();
             isSearch.value = !!keyword.value;
         };
+        
         const backAll = () => {
             isSearch.value = false;
             keyword.value='';
-            getUser()
+            getUser();
+        };
+
+        const onEdit = (record) => {
+            editForm.current = record;
+            editForm.character = record.character;
+
+            showEditCharacterModal.value = true;
+        };
+
+        const updateCharacter = async () => {
+            const res = await user.editCharacter(editForm.character,editForm.current._id);
+
+            result(res)
+                .success(({msg}) => {
+                    message.success(msg);
+                    showEditCharacterModal.value = false;//关闭弹框
+                    editForm.current.character = editForm.character;//修改原始数据的值
+                });
+        };
+
+        const onUploadChange = ({file}) => {
+            if(file.response) {
+                result(file.response)
+                    .success(async(key) => {
+                        const res = await user.addMany(key);
+
+                        result(res)
+                            .success(({data:{addCount}}) => {
+                                message.success(`成功添加${addCount}位用户`);
+
+                                getUser();
+                            })
+                    });
+            }
         };
 
         return {
@@ -98,7 +150,15 @@ export default defineComponent({
             isSearch,
             keyword,
             backAll,
-            onSearch
+            onSearch,
+            onEdit,
+            updateCharacter,
+            getCharacterInfoById,
+            showEditCharacterModal,
+            editForm,
+            characterInfo: store.state.characterInfo,
+            onUploadChange,
+            headers:getHeaders()
         }
 
     },

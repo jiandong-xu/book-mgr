@@ -1,28 +1,35 @@
-import {defineComponent,reactive} from 'vue';
-import {user} from '../../../service'
-import {message} from 'ant-design-vue'
-import {result,clone} from '../../../helpers/utils/index'
+import {defineComponent,reactive,onMounted} from 'vue';
+import {user} from '../../../service';
+import {message} from 'ant-design-vue';
+import {result,clone} from '../../../helpers/utils/index';
+import store from '../../../store'
 
 const defaultFormData = {
     account:'',
-    password:Number,
-}
+    password:'',
+    character:'',
+};
 
 export default defineComponent({
     props:{
         show:Boolean
     },
     setup(props,context) {
-        const addForm = reactive(clone(defaultFormData))
+        const {characterInfo} = store.state;
+        
+
+        const addForm = reactive(clone(defaultFormData));
+
+        addForm.character = characterInfo[1]._id;
 
         const close = () => {
-            context.emit('update:show',false)
-        }
+            context.emit('update:show',false);
+        };
 
         const submit = async () => {
             const form = clone(addForm);//深拷贝
 
-            const res = await user.add(form.account,form.password);
+            const res = await user.add(form.account,form.password,form.character);
 
             result(res).success((d,{data}) => {
                 // console.log('111');
@@ -39,7 +46,8 @@ export default defineComponent({
             addForm,
             submit,
             props,
-            close
+            close,
+            characterInfo
         }
     }
 })

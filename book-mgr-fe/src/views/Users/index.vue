@@ -15,11 +15,20 @@
                 <a v-if="isSearch" href="javascript:;" @click="backAll">返回</a>
             </div>
 
-            <a-button @click="showAddModal=true">添加用户</a-button>
+            
+           <div>
+               <a-button @click="showAddModal=true">添加用户</a-button>
+                &nbsp;
+            <a-upload
+            @change="onUploadChange"
+            action="http://localhost:3000/upload/file"
+            :headers="headers"
+            >
+            <a-button  type="primary">上传 Excel 添加</a-button>
+            </a-upload>
+           </div>
             </space-between>
             <a-divider></a-divider>
-
-           
 
            <div>
                <a-table 
@@ -30,6 +39,11 @@
                >
                <template #createdAt="{record}">
                    {{formatTimestamp(record.meta.createdAt)}}
+               </template>
+
+               <template #character="{ record }">
+                   <a href="javascript:;" @click="onEdit(record)"><EditOutlined /></a>
+                   {{getCharacterInfoById(record.character).title}}
                </template>
 
                <template #actions="{ record }">
@@ -54,8 +68,26 @@
          v-model:show="showAddModal"
          @getList="getUser"
          >
-           
         </add-one>
+
+        <a-modal
+        v-model:visible="showEditCharacterModal"
+        title='修改角色'
+        @ok="updateCharacter"
+        >
+        <a-select
+        v-model:value="editForm.character"
+        style="width: 220px;"
+        > 
+        <a-select-option 
+        v-for="item in characterInfo"
+        :key="item._id"
+        :value="item._id"
+        >
+        {{item.title}}
+        </a-select-option>
+        </a-select>
+        </a-modal>
     </div>
 </template>
 

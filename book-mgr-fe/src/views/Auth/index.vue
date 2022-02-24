@@ -37,7 +37,7 @@
           </div>
 
           <div class="item">
-            <a href="#">忘记密码</a>
+            <a href="javascript:;" @click="forgetPassword">忘记密码</a>
           </div>
 
           <div class="item">
@@ -90,7 +90,7 @@
   </div>
 </template>
 
-<script src="./index.js"></script>
+<script src="./index.jsx"></script>
 
 <style lang='scss' scoped>
 @import "./index.scss";
