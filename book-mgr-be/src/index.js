@@ -8,8 +8,11 @@ const {middleware:koaJwtMiddleware,checkUser,catchTokenError} = require('./helpe
 const {LogMiddleware} = require('./helpers/log/index');
 const cors = require('@koa/cors');
 const config = require('./project.config');
+const path = require('path');
 
 const app = new Koa();
+
+app.use(koaStatic(path.resolve(__dirname,'../public')))
 
 connect().then(() => {//用promise保证时序不出问题
     app.use(cors());
@@ -32,7 +35,7 @@ connect().then(() => {//用promise保证时序不出问题
 
     //开启一个http服务
     //接受http请求，并做处理，处理完后响应
-    app.listen(3000,() => {
+    app.listen(config.SERVER_PORT,() => {
         console.log('启动成功');
     })
 })
