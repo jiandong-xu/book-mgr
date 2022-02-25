@@ -4,7 +4,10 @@
   "description": "毕设项目的服务端",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev":"nodemon src/index.js",
+    "start": "pm2 start node src/index.js",
+    "stop":"pm2 kill"
   },
   "keywords": [
     "毕设"
@@ -23,5 +26,8 @@
     "mongoose": "^6.0.12",
     "node-xlsx": "^0.21.0",
     "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "pm2": "^5.2.0"
   }
 }
